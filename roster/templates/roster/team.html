@@ -2,6 +2,8 @@
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
+<a href="{% url 'roster:player_form' %}">Add Player</a>
+
 {% if team.player_set.all %}
     <ul>
     {% for player in team.player_set.all %}

@@ -24,6 +24,10 @@ class Player(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('roster:team', args=[str(self.team.id)])
+
+
 
 @python_2_unicode_compatible
 class Position(models.Model):
