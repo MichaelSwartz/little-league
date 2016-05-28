@@ -49,12 +49,15 @@ class Ability(models.Model):
     def __str__(self):
         return "{} {} {}".format(self.player, self.position, self.able)
 
+    def get_absolute_url(self):
+        return reverse('roster:team', args=[str(self.player.team.id)])
+
 
 @python_2_unicode_compatible
 class Game(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     date = models.DateField()
-    opponent = models.CharField(max_length=200)
+    opponent = models.CharField(max_length=200, blank=True, null=True)
 
     class Meta:
         unique_together = ('date', 'team', 'opponent')
@@ -63,6 +66,8 @@ class Game(models.Model):
         opponent = (" against " + str(self.opponent)) if self.opponent else ""
         return "{} - {}{}".format(self.date, self.team.name, opponent)
 
+    def get_absolute_url(self):
+        return reverse('roster:team', args=[str(self.team.id)])
 
 @python_2_unicode_compatible
 class Assignment(models.Model):
@@ -77,3 +82,6 @@ class Assignment(models.Model):
 
     def __str__(self):
         return "{} {} {}".format(self.inning, self.position, self.player)
+
+    def get_absolute_url(self):
+        return reverse('roster:team', args=[str(self.player.team.id)])

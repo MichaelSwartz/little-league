@@ -16,4 +16,16 @@
     {% else %}
         <p>Add players.</p>
     {% endif %}
+
+    <a href="{% url 'roster:game_form' team.id %}">New Game</a>
+
+    {% if team.game_set.all %}
+        <ul>
+        {% for game in team.game_set.all %}
+            <li><a href="{% url 'roster:game' game.id %}">{{ game }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No games yet.</p>
+    {% endif %}
 {% endblock %}

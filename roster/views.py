@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.views import generic
 
-from .models import Team, Player
+from .models import Team, Player, Game, Position, Assignment
 
 
 class IndexView(generic.ListView):
@@ -42,5 +42,27 @@ class PlayerCreate(generic.CreateView):
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
 
-    # def get_success_url(self):
-    #     return reverse_lazy('roster:team', args=[str(self.team.id)])
+
+
+class GameCreate(generic.CreateView):
+    model = Game
+    template_name = 'roster/game_form.html'
+    fields = ['date', 'opponent']
+
+    def dispatch(self, *args, **kwargs):
+        self.team = get_object_or_404(Team, pk=kwargs['team_id'])
+        return super(GameCreate, self).dispatch(*args, **kwargs)
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.team = self.team
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class GameView(generic.DetailView):
+    model = Game
+    template_name = 'roster/game.html'
+
+    def get_queryset(self):
+        return Game.objects
