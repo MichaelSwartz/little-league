@@ -49,6 +49,7 @@ class Ability(models.Model):
     def __str__(self):
         return "{} {} {}".format(self.player, self.position, self.able)
 
+
 @python_2_unicode_compatible
 class Game(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
@@ -61,3 +62,18 @@ class Game(models.Model):
     def __str__(self):
         opponent = (" against " + str(self.opponent)) if self.opponent else ""
         return "{} - {}{}".format(self.date, self.team.name, opponent)
+
+
+@python_2_unicode_compatible
+class Assignment(models.Model):
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    position = models.ForeignKey(Position, on_delete=models.CASCADE)
+    inning = models.IntegerField()
+
+    class Meta:
+        unique_together = (('game', 'inning', 'player'),
+                           ('game', 'inning', 'position'))
+
+    def __str__(self):
+        return "{} {} {}".format(self.inning, self.position, self.player)
