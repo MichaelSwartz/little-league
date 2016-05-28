@@ -29,7 +29,6 @@ class Player(models.Model):
         return reverse('roster:team', args=[str(self.team.id)])
 
 
-
 @python_2_unicode_compatible
 class Position(models.Model):
     name = models.CharField(max_length=200)
@@ -38,6 +37,7 @@ class Position(models.Model):
         return self.name
 
 
+@python_2_unicode_compatible
 class Ability(models.Model):
     position = models.ForeignKey(Position, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
@@ -45,3 +45,19 @@ class Ability(models.Model):
 
     class Meta:
         unique_together = ('position', 'player')
+
+    def __str__(self):
+        return "{} {} {}".format(self.player, self.position, self.able)
+
+@python_2_unicode_compatible
+class Game(models.Model):
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    date = models.DateField()
+    opponent = models.CharField(max_length=200)
+
+    class Meta:
+        unique_together = ('date', 'team', 'opponent')
+
+    def __str__(self):
+        opponent = (" against " + str(self.opponent) if self.opponent else ""
+        return "{} - {}{}".format(self.date, self.team.name, opponent)
