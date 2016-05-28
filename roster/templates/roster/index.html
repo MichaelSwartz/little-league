@@ -5,9 +5,9 @@
 
     <a href="{% url 'roster:team_form' %}">New Team</a>
 
-    {% if team_list %}
+    {% if teams %}
         <ul>
-        {% for team in team_list %}
+        {% for team in teams %}
             <li><a href="{% url 'roster:team' team.id %}">{{ team.name }}</a></li>
         {% endfor %}
         </ul>

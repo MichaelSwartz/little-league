@@ -1,30 +1,59 @@
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
+from django.forms import ModelForm
 from django.views import generic
 
 from .models import Team, Player, Game, Position, Assignment
 
 
-class IndexView(generic.ListView):
-    template_name = 'roster/index.html'
-
-    def get_queryset(self):
-        return Team.objects.order_by('name')
+#############
+### FORMS ###
+#############
 
 
-class TeamView(generic.DetailView):
-    model = Team
-    template_name = 'roster/team.html'
+class TeamForm(ModelForm):
+    class Meta:
+        model = Team
+        fields = ['name']
 
-    def get_queryset(self):
-        return Team.objects
+   # def __init__(self, *args, **kwargs):
+   #     self.request = kwargs.pop('request', None)
+   #     return super(TeamForm, self).__init__(*args, **kwargs)
+
+   # def save(self, *args, **kwargs):
+   #     kwargs['commit'] = False
+   #     team = super(TeamForm, self).save(*args, **kwargs)
+   #     if self.request:
+   #         team.owner = self.request.user
+   #     team.save()
+   #     return team
 
 
-class TeamCreate(generic.CreateView):
-    model = Team
-    template_name = 'roster/team_form.html'
-    fields = ['name', 'owner']
+def index(request):
+    teams = Team.objects.order_by('name')
+    return render(request, 'roster/index.html', {'teams': teams})
+
+
+def team(request, team_id):
+    team = get_object_or_404(Team, pk=team_id)
+    return render(request, 'roster/team.html', {'team': team})
+
+def team_create(request):
+    form = TeamForm(request.POST or None)
+    team = form.save(commit=False)
+    team.owner = request.user
+    if form.is_valid():
+        team.save()
+        return HttpResponseRedirect(reverse('roster:team', args=(team.id,)))
+
+    return render(request, 'roster/team_form.html', {'form': form})
+
+
+# class TeamCreate(generic.CreateView):
+#     model = Team
+#     template_name = 'roster/team_form.html'
+#     fields = ['name', 'owner']
 
 
 class PlayerCreate(generic.CreateView):
