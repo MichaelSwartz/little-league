@@ -59,5 +59,5 @@ class Game(models.Model):
         unique_together = ('date', 'team', 'opponent')
 
     def __str__(self):
-        opponent = (" against " + str(self.opponent) if self.opponent else ""
+        opponent = (" against " + str(self.opponent)) if self.opponent else ""
         return "{} - {}{}".format(self.date, self.team.name, opponent)
