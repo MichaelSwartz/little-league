@@ -1,15 +1,19 @@
-<h1>{{ team.name }}</h1>
+{% extends 'roster/base.html' %}
 
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+{% block content %}
+    <h1>{{ team.name }}</h1>
 
-<a href="{% url 'roster:player_form' %}">Add Player</a>
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
-{% if team.player_set.all %}
-    <ul>
-    {% for player in team.player_set.all %}
-        <li>{{ player.name }}</li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>Add players.</p>
-{% endif %}
+    <a href="{% url 'roster:player_form' team.id %}">Add Player</a>
+
+    {% if team.player_set.all %}
+        <ul>
+        {% for player in team.player_set.all %}
+            <li>{{ player.name }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Add players.</p>
+    {% endif %}
+{% endblock %}
