@@ -22,6 +22,11 @@ class PlayerForm(ModelForm):
         fields = ['name', 'active']
 
 
+class GameForm(ModelForm):
+    class Meta:
+        model = Game
+        fields = ['date', 'opponent']
+
 ### Teams ###
 
 def index(request):
@@ -55,25 +60,17 @@ def player_create(request, team_id):
 
 ### Games ###
 
-class GameCreate(generic.CreateView):
-    model = Game
-    template_name = 'roster/game_form.html'
-    fields = ['date', 'opponent']
+def game_create(request, team_id):
+    form = GameForm(request.POST or None)
+    if form.is_valid():
+        team = get_object_or_404(Team, pk=team_id)
+        game = form.save(commit=False)
+        game.team = team
+        game.save()
+        return HttpResponseRedirect(reverse('roster:game', args=(game.pk,)))
 
-    def dispatch(self, *args, **kwargs):
-        self.team = get_object_or_404(Team, pk=kwargs['team_id'])
-        return super(GameCreate, self).dispatch(*args, **kwargs)
+    return render(request, 'roster/game_form.html', {'form': form})
 
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.team = self.team
-        self.object.save()
-        return HttpResponseRedirect(self.get_success_url())
-
-
-class GameView(generic.DetailView):
-    model = Game
-    template_name = 'roster/game.html'
-
-    def get_queryset(self):
-        return Game.objects
+def game(request, game_id):
+    game = get_object_or_404(Game, pk=game_id)
+    return render(request, 'roster/game.html', {'game': game})
