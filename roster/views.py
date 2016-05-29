@@ -43,12 +43,11 @@ def team_create(request):
     return render(request, 'roster/team_form.html', {'form': form})
 
 def player_create(request, team_id):
-    team = get_object_or_404(Team, pk=team_id)
     form = PlayerForm(request.POST or None)
-    player = form.save(commit=False)
-    player.team = team
-
     if form.is_valid():
+        team = get_object_or_404(Team, pk=team_id)
+        player = form.save(commit=False)
+        player.team = team
         player.save()
         return HttpResponseRedirect(reverse('roster:team', args=(team_id,)))
 
